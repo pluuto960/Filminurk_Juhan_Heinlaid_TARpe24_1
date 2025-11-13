@@ -68,7 +68,7 @@ namespace Filminurk.Controllers
             return NotFound();
         }
         [HttpGet]
-        public async Task<IActionResult> DetailsAdmin(Guid id)
+        public async Task<IActionResult> DeleteComment(Guid id)
         {
             var requestedComment = await _userCommentsServices.DetailAsync(id);
 
@@ -85,8 +85,33 @@ namespace Filminurk.Controllers
             commentVM.CommentModifiedAt = requestedComment.CommentModifiedAt;
             commentVM.CommentDeletedAt = requestedComment.CommentDeletedAt;
 
+            return View("DeleteAdmin",commentVM);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteAdmin(Guid id)
+        {
+            var deleteEntry = await _userCommentsServices.DetailAsync(id);
+
+            if (deleteEntry == null) { return NotFound(); }
+
+            var commentVM = new UserCommentsIndexViewModel();
+            commentVM.CommentID = deleteEntry.CommentID;
+            commentVM.CommentBody = deleteEntry.CommentBody;
+            commentVM.CommentUserID = deleteEntry.CommentUserID;
+            commentVM.CommentScore = deleteEntry.CommentScore;
+            commentVM.CommentCreatedAt = deleteEntry.CommentCreatedAt;
+            commentVM.CommentModifiedAt = deleteEntry.CommentModifiedAt;
+            commentVM.CommentDeletedAt = deleteEntry.CommentDeletedAt;
             return View(commentVM);
         }
+        [HttpPost, ActionName("DeleteCommentAdmin")]
+        public async Task<IActionResult> DeleteAdmin(Guid id)
+        {
+            var deleteThisComment = await _userCommentsServices.Delete(id);
+            if (deleteThisComment == null) { return NotFound(); }
+            return View();
 
+
+        }
+    } 
     }
-}
