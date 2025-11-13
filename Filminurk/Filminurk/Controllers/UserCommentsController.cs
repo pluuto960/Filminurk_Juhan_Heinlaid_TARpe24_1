@@ -67,5 +67,26 @@ namespace Filminurk.Controllers
             }
             return NotFound();
         }
+        [HttpGet]
+        public async Task<IActionResult> DetailsAdmin(Guid id)
+        {
+            var requestedComment = await _userCommentsServices.DetailAsync(id);
+
+            if (requestedComment == null) { return NotFound(); }
+
+            var commentVM = new UserCommentsIndexViewModel();
+
+
+            commentVM.CommentID = requestedComment.CommentID;
+            commentVM.CommentBody = requestedComment.CommentBody;
+            commentVM.CommentUserID = requestedComment.CommentUserID;
+            commentVM.CommentScore = requestedComment.CommentScore;
+            commentVM.CommentCreatedAt = requestedComment.CommentCreatedAt;
+            commentVM.CommentModifiedAt = requestedComment.CommentModifiedAt;
+            commentVM.CommentDeletedAt = requestedComment.CommentDeletedAt;
+
+            return View(commentVM);
+        }
+
     }
 }
