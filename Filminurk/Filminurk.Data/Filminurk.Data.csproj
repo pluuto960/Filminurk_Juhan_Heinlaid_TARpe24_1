@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Filminurk.Core\Filminurk.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
