@@ -19,11 +19,12 @@ namespace Filminurk.Core.Dto
         public double? CurrentRating { get; set; }
         // public List<UserComment>? Reviews { get; set; }
 
-        //Kaasasolevate piltide andmeomadused
+        // kaasolevate piltide andmeomadused
         public List<IFormFile> Files { get; set; }
-        public IEnumerable<FileToApiDTO> FileToApiDTOs { get; set; }
+        public IEnumerable<FileToApiDTO> FileToApiDtos { get; set; } = new List<FileToApiDTO>();
 
         /* 3 õpilase valitud andmetüübi */
+
         public bool? Vulgar { get; set; }
         public Genre? Genre { get; set; }
         public bool? IsOnAdultSwim { get; set; }

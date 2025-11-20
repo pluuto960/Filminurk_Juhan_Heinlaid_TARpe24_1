@@ -8,69 +8,73 @@ using Filminurk.Core.Dto;
 using Filminurk.Core.ServiceInterface;
 using Filminurk.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Hosting;
 
 namespace Filminurk.ApplicationServices.Services
 {
     public class FilesServices : IFilesServices
     {
-        private readonly IHostEnvironment _webHost;
+        public readonly IHostEnvironment _weblost;
         private readonly FilminurkTARpe24Context _context;
 
-        public FilesServices(IHostEnvironment webHost, FilminurkTARpe24Context context)
+        public FilesServices(IHostEnvironment weblost, FilminurkTARpe24Context context)
         {
-            _webHost = webHost;
             _context = context;
+            _weblost = weblost;
         }
 
         public void FilesToApi(MoviesDTO dto, Movie domain)
         {
-            if (dto.Files == null && dto.Files.Count > 0)
+            if (dto.Files != null  && dto.Files.Count > 0)
             {
-                if (Directory.Exists(_webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"))
+                if (!Directory.Exists(_weblost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"))
                 {
-                    Directory.CreateDirectory(_webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\");
+                    Directory.CreateDirectory(_weblost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\");
                 }
 
-                foreach (var file in dto.Files) 
+                foreach (var file in dto.Files)
                 {
-                    string uploadsFolder = Path.Combine(_webHost.ContentRootPath, "wwwroot", "multipleFileUpload");
-                    string uniqueFileName= Guid.NewGuid().ToString()+"_"+ file.FileName;
+                    string uploadsFolder = Path.Combine(_weblost.ContentRootPath, "wwwroot", "multipleFileUpload");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
                         file.CopyTo(fileStream);
-                        FiletoApi path = new FiletoApi
+                        FileToApi path = new FileToApi
                         {
                             ImageID = Guid.NewGuid(),
-                            ExistingFilepath = filePath,
+                            ExistingFilePath = uniqueFileName,
+                            MovieID = domain.ID
+
                         };
-                            
                         _context.FilesToApi.AddAsync(path);
-                         
+
                     }
                 }
+
             }
+
         }
 
-        public async Task<FiletoApi> RemoveImageFromApi(FileToApiDTO dto)
+        public async Task<FileToApi> RemoveImageFromApi(FileToApiDTO dto)
         {
-            var imageID = await _context.FilesToApi.FirstOrDefaultAsync(x => x.ImageID == dto.ImageID);
+            var ImageID = await _context.FilesToApi.FirstOrDefaultAsync(x => x.ImageID == dto.ImageID);
+            var filePath = _weblost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\" + ImageID.ExistingFilePath;
 
-            var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\" + imageID.ExistingFilepath;
-            if (File.Exists(filePath)) 
+            if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
 
-            _context.FilesToApi.Remove(imageID);
+            _context.FilesToApi.Remove(ImageID);
             await _context.SaveChangesAsync();
-
             return null;
         }
 
-        public async Task<List<FiletoApi>> RemoveImagesFromApi(FileToApiDTO[] dtos)
+        public async Task<List<FileToApi>> RemoveImagesFromApi(FileToApiDTO[] dtos)
         {
             foreach (var dto in dtos)
             {

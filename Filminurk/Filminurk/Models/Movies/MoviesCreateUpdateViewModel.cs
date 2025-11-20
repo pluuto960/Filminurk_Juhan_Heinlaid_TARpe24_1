@@ -1,5 +1,4 @@
 ﻿using Filminurk.Core.Domain;
-using Filminurk.Views.Movies;
 
 namespace Filminurk.Models.Movies
 {
@@ -14,9 +13,10 @@ namespace Filminurk.Models.Movies
         public double? CurrentRating { get; set; }
         // public List<UserComment>? Reviews { get; set; }
 
-        /*Kaasasolevate piltide andmeomadused*/
-        public List <IFormFile> Files { get; set; }
-        public List<ImageViewModel> Images { get; set; }=new List<ImageViewModel>();
+        // kaasolevate piltide andmeomadused
+        public List<IFormFile> Files { get; set; }
+        public List<ImageViewModel> Images { get; set; } = new List<ImageViewModel>();
+
 
         /* 3 õpilase valitud andmetüübi */
 

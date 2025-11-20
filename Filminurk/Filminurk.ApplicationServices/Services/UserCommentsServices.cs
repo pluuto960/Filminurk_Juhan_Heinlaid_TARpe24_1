@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Filminurk.Core.Domain;
+using Filminurk.Core.Dto;
 using Filminurk.Core.ServiceInterface;
 using Filminurk.Data;
 using Microsoft.EntityFrameworkCore;
@@ -11,23 +13,24 @@ namespace Filminurk.ApplicationServices.Services
 {
     public class UserCommentsServices : IUserCommentsServices
     {
+
         private readonly FilminurkTARpe24Context _context;
 
         public UserCommentsServices(FilminurkTARpe24Context context)
         {
-            _context= context;
+            _context = context;
         }
 
         public async Task<UserComment> NewComment(UserCommentDTO newcommentDTO)
         {
-            UserCommentsServices domain = new UserComment();
+            UserComment domain = new UserComment();
 
             domain.CommentID = Guid.NewGuid();
             domain.CommentBody = newcommentDTO.CommentBody;
-            domain.CommentUserID = newcommentDTO.CommenterUserID;
-            domain.CommentedScore=newcommentDTO.CommentedScore;
-            domain.CommentCreatedAt=DateTime.Now;
-            domain.CommentModifiedAt=DateTime.Now;
+            domain.CommentUserID = newcommentDTO.CommentUserID;
+            domain.CommentedScore = newcommentDTO.CommentedScore;
+            domain.CommentCreatedAt = DateTime.Now;
+            domain.CommentModifiedAt = DateTime.Now;
             domain.IsHelpful = newcommentDTO.IsHelpful;
             domain.IsHarmful = newcommentDTO.IsHarmful;
 
@@ -37,20 +40,22 @@ namespace Filminurk.ApplicationServices.Services
             return domain;
         }
 
-        public async Task<UserComment> DetailAsync(Guid id)
+        public async Task<UserComment> DetailsAsync(Guid id)
         {
-            var returnedComment = await _context.UserComments
-                .FirstOrDefaultAsync(x=>x.CommentID == id);
+            var returnedComment = await _context.UserComments.FirstOrDefaultAsync(x => x.CommentID == id);
             return returnedComment;
+
         }
 
-        public async Task<UserComment>Delete(Guid id)
+        public async Task<UserComment> Delete(Guid id)
         {
-            var result = await _context.UserComments .FirstOrDefaultAsync(x=>x.CommentID == id);
+            var result = await _context.UserComments
+                .FirstOrDefaultAsync(x => x.CommentID == id);
             _context.UserComments.Remove(result);
             await _context.SaveChangesAsync();
             return result;
-            //TODO: send email to user, that comment was removed, containing original comment.
+
+            // Todo: send email to user, that comment was remove, containing original comment
         }
     }
 }
